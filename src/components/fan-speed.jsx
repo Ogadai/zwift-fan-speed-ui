@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Slider from 'react-slider';
 import classnames from 'classnames';
 
-import { fetchFanSpeed, setFanSpeed } from '../actions';
+import { pollServer, setFanSpeed, setManualMode } from '../actions';
 
 import s from './fan-speed.css';
 
@@ -11,18 +11,21 @@ class FanSpeed extends Component {
   static get propTypes() {
     return {
       fanSpeed: PropTypes.object.isRequired,
-			disabled: PropTypes.bool,
-      onFetch: PropTypes.func.isRequired,
-      onSet: PropTypes.func.isRequired
+      manual: PropTypes.bool,
+			riding: PropTypes.bool,
+      onStartPoll: PropTypes.func.isRequired,
+      onSet: PropTypes.func.isRequired,
+      onSetManual: PropTypes.func.isRequired
     };
   }
 
   componentDidMount() {
-    this.props.onFetch();
+    this.props.onStartPoll();
   }
 
   render() {
-    const { fanSpeed, disabled, onSet } = this.props;
+    const { fanSpeed, manual, riding, onSet } = this.props;
+    const disabled = riding && !manual;
     return (
       <div className={classnames("fan-speed", this.getFanClass(fanSpeed.fan), { disabled })}>
         <Slider
@@ -33,8 +36,20 @@ class FanSpeed extends Component {
           orientation="vertical"
           disabled={disabled}
 					/>
+        <div className="status">
+          <span className="speed">{fanSpeed.speed}</span>
+          {riding && <span className="fan-checkbox">
+            <input id="fanManual" type="checkbox" checked={manual} onClick={() => this.toggleManual()} />
+            <label htmlFor="fanManual"></label>
+          </span>}
+        </div>
 			</div>
     )
+  }
+
+  toggleManual() {
+    const { manual, onSetManual } = this.props;
+    onSetManual(!manual);
   }
 
   getFanClass(fan) {
@@ -47,14 +62,16 @@ class FanSpeed extends Component {
 const mapStateToProps = (state) => {
   return {
     fanSpeed: state.fanSpeed,
-		disabled: !!state.profile.riding
+    manual: state.status.manual,
+		riding: !!state.status.riding
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetch: () => dispatch(fetchFanSpeed()),
-    onSet: speed => dispatch(setFanSpeed(speed))
+    onStartPoll: () => dispatch(pollServer()),
+    onSet: speed => dispatch(setFanSpeed(speed)),
+    onSetManual: manual => dispatch(setManualMode(manual))
   }
 }
 

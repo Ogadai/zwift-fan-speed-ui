@@ -1,17 +1,29 @@
 ﻿import axios from 'axios';
 
-export const RECEIVE_PROFILE = "RECEIVE_PROFILE";
+export const RECEIVE_STATUS = "RECEIVE_STATUS";
 
-function receiveProfile(data) {
+const POLLING_INTERVAL = 1000;
+
+function receiveStatus(data) {
   return {
-    type: RECEIVE_PROFILE,
+    type: RECEIVE_STATUS,
 		data
   };
 }
 
-export function fetchProfile() {
+export function fetchStatus() {
   return dispatch => {
-    axios.get('/profile/').then(response => dispatch(receiveProfile(response.data)));
+    axios.get('/status/').then(response => {
+      const { riding, manual, fan } = response.data;
+      dispatch(receiveStatus({ riding, manual }));
+      dispatch(receiveFanSpeed(fan));
+    });
+  }
+}
+
+export function setManualMode(manual) {
+  return dispatch => {
+    axios.post('/status/', { manual }).then(response => dispatch(receiveStatus(response.data)));
   }
 }
 
@@ -33,5 +45,12 @@ export function fetchFanSpeed() {
 export function setFanSpeed(speed) {
   return dispatch => {
     axios.post('/fan/', { speed }).then(response => dispatch(receiveFanSpeed(response.data)));
+  }
+}
+
+export function pollServer() {
+  return dispatch => {
+    dispatch(fetchStatus());
+    setInterval(() => dispatch(fetchStatus()), POLLING_INTERVAL);
   }
 }

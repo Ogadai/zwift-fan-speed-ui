@@ -5,3 +5,33 @@ body {
 .disabled {
     filter: grayscale(100%);
 }
+
+.fan-checkbox {
+    background-color: #FFE0D0;
+    border: 1px solid #FC6719;
+    position: relative;
+    
+    & input {
+        display: none;
+    }
+    & input + label {
+        display: inline-block;
+        width: 80px;
+        height: 30px;
+
+        &::before {
+            content: " ";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 36px;
+            bottom: 2px;
+            background-color: #FC6719;
+            pointer-events: none;
+        }
+    }
+
+    & input:checked + label::before {
+        left: 42px;
+    }
+}
