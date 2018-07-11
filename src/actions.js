@@ -14,8 +14,8 @@ function receiveStatus(data) {
 export function fetchStatus() {
   return dispatch => {
     axios.get('/status/').then(response => {
-      const { riding, manual, fan } = response.data;
-      dispatch(receiveStatus({ riding, manual }));
+      const { riding, manual, heartRate, fan } = response.data;
+      dispatch(receiveStatus({ riding, manual, heartRate }));
       dispatch(receiveFanSpeed(fan));
     });
   }
@@ -24,6 +24,12 @@ export function fetchStatus() {
 export function setManualMode(manual) {
   return dispatch => {
     axios.post('/status/', { manual }).then(response => dispatch(receiveStatus(response.data)));
+  }
+}
+
+export function setHearRateMode(heartRate) {
+  return dispatch => {
+    axios.post('/status/', { heartRate }).then(response => dispatch(receiveStatus(response.data)));
   }
 }
 

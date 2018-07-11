@@ -51,8 +51,8 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: 'img', to: 'img' },
       { from: 'src/favicon.ico', to: 'favicon.ico' },
-      { from: 'src/android-icon-*.png' },
-			{ from: 'src/manifest.json', to: 'manifest.json' }
+			{ from: 'src/manifest.json', to: 'manifest.json' },
+      { from: 'android-icon-*.png' }
     ]),
     new HtmlWebpackPlugin({
       template: './src/template.html',

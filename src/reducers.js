@@ -2,7 +2,7 @@
 
 import { RECEIVE_STATUS, RECEIVE_FANSPEED } from './actions';
 
-function status(state = { riding: false, manual: false }, action) {
+function status(state = { riding: false, manual: false, heartRate: false }, action) {
   switch (action.type) {
     case RECEIVE_STATUS:
       return Object.assign({}, state, action.data);

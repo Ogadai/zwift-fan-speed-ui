@@ -4,17 +4,18 @@
 }
 
 .fan-speed {
-    position: absolute;
+    position: relative;
     box-sizing: border-box;
-    top: 0;
-    left: calc(50% - var(--slider-panel) / 2);
-    width: var(--slider-panel);
-    bottom: var(--padding);
+    margin: 0 auto;
+    width: var(--main-panel);
+    max-width: 100%;
+    height: 100%;
     overflow: hidden;
-    padding: var(--padding);
+    padding: calc(55 + var(--padding)) var(--padding) var(--padding) var(--padding);
 
     & .status {
         position: absolute;
+        z-index: 10;
         top: 10px;
         left: 10px;
         right: 10px;
@@ -35,6 +36,7 @@
         width: var(--slider-width);
         height: 100%;
         background: white;
+        margin: 0 auto;
 
         & .handle {
             width: var(--slider-width);
@@ -42,6 +44,11 @@
             background-image: url(/img/fan.png);
             background-size: 100% 100%;
             background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
+        &.disabled .handle {
+            cursor: default;
         }
     }
 

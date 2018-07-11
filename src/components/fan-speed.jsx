@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Slider from 'react-slider';
 import classnames from 'classnames';
 
-import { pollServer, setFanSpeed, setManualMode } from '../actions';
+import { pollServer, setFanSpeed, setManualMode, setHearRateMode } from '../actions';
 
 import s from './fan-speed.css';
 
@@ -12,10 +12,12 @@ class FanSpeed extends Component {
     return {
       fanSpeed: PropTypes.object.isRequired,
       manual: PropTypes.bool,
+      heartRate: PropTypes.bool,
 			riding: PropTypes.bool,
       onStartPoll: PropTypes.func.isRequired,
       onSet: PropTypes.func.isRequired,
-      onSetManual: PropTypes.func.isRequired
+      onSetManual: PropTypes.func.isRequired,
+      onSetHearRate: PropTypes.func.isRequired
     };
   }
 
@@ -24,19 +26,23 @@ class FanSpeed extends Component {
   }
 
   render() {
-    const { fanSpeed, manual, riding, onSet } = this.props;
+    const { fanSpeed, manual, heartRate, riding, onSet } = this.props;
     const disabled = riding && !manual;
     return (
-      <div className={classnames("fan-speed", this.getFanClass(fanSpeed.fan), { disabled })}>
+      <div className={classnames("fan-speed", this.getFanClass(fanSpeed.fan))}>
         <Slider
-          min={15}
-					max={75}
-					value={fanSpeed.speed}
-          onChange={onSet}
+          min={10}
+					max={100}
+					value={fanSpeed.fan * 100}
+          onChange={speed => onSet(speed / 100)}
           orientation="vertical"
           disabled={disabled}
 					/>
         <div className="status">
+          {(riding && !manual) && <span className="fan-heartrate">
+            <input id="fanHeartRate" type="checkbox" checked={heartRate} onClick={() => this.toggleHeartRate()} />
+            <label htmlFor="fanHeartRate"></label>
+          </span>}
           <span className="speed">{fanSpeed.speed}</span>
           {riding && <span className="fan-checkbox">
             <input id="fanManual" type="checkbox" checked={manual} onClick={() => this.toggleManual()} />
@@ -51,6 +57,11 @@ class FanSpeed extends Component {
     const { manual, onSetManual } = this.props;
     onSetManual(!manual);
   }
+  
+  toggleHeartRate() {
+    const { heartRate, onSetHearRate } = this.props;
+    onSetHearRate(!heartRate);
+  }
 
   getFanClass(fan) {
     const speedClass = Math.round(fan * 10);
@@ -63,6 +74,7 @@ const mapStateToProps = (state) => {
   return {
     fanSpeed: state.fanSpeed,
     manual: state.status.manual,
+    heartRate: state.status.heartRate,
 		riding: !!state.status.riding
   }
 }
@@ -71,7 +83,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onStartPoll: () => dispatch(pollServer()),
     onSet: speed => dispatch(setFanSpeed(speed)),
-    onSetManual: manual => dispatch(setManualMode(manual))
+    onSetManual: manual => dispatch(setManualMode(manual)),
+    onSetHearRate: heartRate => dispatch(setHearRateMode(heartRate))
   }
 }
 

@@ -19,4 +19,7 @@ render(
   </AppContainer>,
   document.querySelector("#app")
 );
-document.ontouchmove = function(e){ e.preventDefault(); }
+
+document.ontouchmove = function(e) {
+  e.preventDefault();
+}

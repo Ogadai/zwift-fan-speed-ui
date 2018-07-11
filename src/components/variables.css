@@ -1,4 +1,5 @@
 ﻿:root {
     --padding: 10px;
-    --slider-panel: 300px;
+    --main-panel: 400px;
+    --slider-panel: 200px;
 }
