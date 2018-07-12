@@ -60,7 +60,7 @@ body {
         margin: 1px;
         width: 30px;
         height: 30px;
-        background-image: url(/img/heart-rate.png);
+        background-image: url(../../img/heart-rate.png);
         background-size: 100% 100%;
         background-repeat: no-repeat;
         filter: grayscale(100%);

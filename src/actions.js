@@ -12,8 +12,11 @@ function receiveStatus(data) {
 }
 
 export function fetchStatus() {
-  return dispatch => {
+  return (dispatch, getState) => {
+    if (getState().interaction.sliding) return Promise.resolve();
+
     axios.get('/status/').then(response => {
+      if (getState().interaction.sliding) return;
       const { riding, manual, heartRate, fan } = response.data;
       dispatch(receiveStatus({ riding, manual, heartRate }));
       dispatch(receiveFanSpeed(fan));
@@ -43,14 +46,31 @@ function receiveFanSpeed(data) {
 }
 
 export function fetchFanSpeed() {
-  return dispatch => {
-    axios.get('/fan/').then(response => dispatch(receiveFanSpeed(response.data)));
-  }
+  return dispatch => dispatch(callFanSpeed('get'));
 }
 
 export function setFanSpeed(speed) {
   return dispatch => {
-    axios.post('/fan/', { speed }).then(response => dispatch(receiveFanSpeed(response.data)));
+    dispatch(receiveFanSpeed({
+      speed, fan: speed
+    }));
+    return dispatch(callFanSpeed('post', { speed }));
+  }
+}
+
+let fanSpeedCancelFn;
+function callFanSpeed(verb, params) {
+  let cancelled = false;
+  if (fanSpeedCancelFn) fanSpeedCancelFn();
+  fanSpeedCancelFn = () => { cancelled = true; fanSpeedCancelFn = null; }
+
+  return (dispatch, getState) => {
+    axios[verb]('/fan/', params).then(response => {
+      if (!cancelled && !getState().interaction.sliding) {
+        fanSpeedCancelFn = null;
+        dispatch(receiveFanSpeed(response.data))
+      }
+    });
   }
 }
 
@@ -59,4 +79,13 @@ export function pollServer() {
     dispatch(fetchStatus());
     setInterval(() => dispatch(fetchStatus()), POLLING_INTERVAL);
   }
+}
+
+export const SLIDING_STATUS = "SLIDING_STATUS";
+
+export function setSlidingStatus(sliding) {
+  return {
+    type: SLIDING_STATUS,
+    sliding
+  };
 }

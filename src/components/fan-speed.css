@@ -41,7 +41,7 @@
         & .handle {
             width: var(--slider-width);
             height: var(--slider-width);
-            background-image: url(/img/fan.png);
+            background-image: url(../../img/fan.png);
             background-size: 100% 100%;
             background-repeat: no-repeat;
             cursor: pointer;

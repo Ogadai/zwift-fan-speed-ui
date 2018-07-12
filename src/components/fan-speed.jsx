@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Slider from 'react-slider';
 import classnames from 'classnames';
 
-import { pollServer, setFanSpeed, setManualMode, setHearRateMode } from '../actions';
+import { pollServer, setFanSpeed, setManualMode, setHearRateMode, setSlidingStatus } from '../actions';
 
 import s from './fan-speed.css';
 
@@ -13,11 +13,12 @@ class FanSpeed extends Component {
       fanSpeed: PropTypes.object.isRequired,
       manual: PropTypes.bool,
       heartRate: PropTypes.bool,
-			riding: PropTypes.bool,
+      riding: PropTypes.bool,
       onStartPoll: PropTypes.func.isRequired,
       onSet: PropTypes.func.isRequired,
       onSetManual: PropTypes.func.isRequired,
-      onSetHearRate: PropTypes.func.isRequired
+      onSetHearRate: PropTypes.func.isRequired,
+      onSetSlidingStatus: PropTypes.func.isRequired
     };
   }
 
@@ -26,15 +27,17 @@ class FanSpeed extends Component {
   }
 
   render() {
-    const { fanSpeed, manual, heartRate, riding, onSet } = this.props;
+    const { fanSpeed, manual, heartRate, riding, onSet, onSetSlidingStatus } = this.props;
     const disabled = riding && !manual;
     return (
       <div className={classnames("fan-speed", this.getFanClass(fanSpeed.fan))}>
         <Slider
-          min={10}
+          min={0}
 					max={100}
 					value={fanSpeed.fan * 100}
           onChange={speed => onSet(speed / 100)}
+          onBeforeChange={() => onSetSlidingStatus(true)}
+          onAfterChange={() => onSetSlidingStatus(false)}
           orientation="vertical"
           disabled={disabled}
 					/>
@@ -75,7 +78,7 @@ const mapStateToProps = (state) => {
     fanSpeed: state.fanSpeed,
     manual: state.status.manual,
     heartRate: state.status.heartRate,
-		riding: !!state.status.riding
+    riding: !!state.status.riding
   }
 }
 
@@ -84,7 +87,8 @@ const mapDispatchToProps = (dispatch) => {
     onStartPoll: () => dispatch(pollServer()),
     onSet: speed => dispatch(setFanSpeed(speed)),
     onSetManual: manual => dispatch(setManualMode(manual)),
-    onSetHearRate: heartRate => dispatch(setHearRateMode(heartRate))
+    onSetHearRate: heartRate => dispatch(setHearRateMode(heartRate)),
+    onSetSlidingStatus: sliding => dispatch(setSlidingStatus(sliding))
   }
 }
 

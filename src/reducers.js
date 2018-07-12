@@ -1,6 +1,6 @@
 ﻿import { combineReducers } from 'redux'
 
-import { RECEIVE_STATUS, RECEIVE_FANSPEED } from './actions';
+import { RECEIVE_STATUS, RECEIVE_FANSPEED, SLIDING_STATUS } from './actions';
 
 function status(state = { riding: false, manual: false, heartRate: false }, action) {
   switch (action.type) {
@@ -25,9 +25,19 @@ function fanSpeed(state = defaultFanSpeed, action) {
   }
 }
 
+function interaction(state = { sliding: false }, action) {
+  switch (action.type) {
+    case SLIDING_STATUS:
+      return Object.assign({}, state, { sliding: action.sliding });
+    default:
+      return state;
+  }
+}
+
 const rootReducer = combineReducers({
   status,
-	fanSpeed
+  fanSpeed,
+  interaction
 })
 
 export default rootReducer
